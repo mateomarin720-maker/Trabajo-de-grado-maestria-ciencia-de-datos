@@ -43,6 +43,19 @@ class SocrataClient:
         self.domain = domain.rstrip("/")
         self.app_token = app_token or os.getenv("SOCRATA_APP_TOKEN")
         self.session = requests.Session()
+        # Algunos portales Socrata gubernamentales (p. ej. datos.gov.co)
+        # devuelven 403 Forbidden a peticiones con el User-Agent genérico
+        # de `requests`. Un User-Agent de navegador evita ese bloqueo.
+        self.session.headers.update(
+            {
+                "User-Agent": (
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                    "AppleWebKit/537.36 (KHTML, like Gecko) "
+                    "Chrome/124.0.0.0 Safari/537.36"
+                ),
+                "Accept": "application/json",
+            }
+        )
         if self.app_token:
             self.session.headers.update({"X-App-Token": self.app_token})
 
@@ -89,6 +102,13 @@ class SocrataClient:
                 "Descargando %s — offset=%s limit=%s", dataset_id, offset, page_limit
             )
             resp = self.session.get(endpoint, params=params, timeout=DEFAULT_TIMEOUT)
+            if not resp.ok:
+                logger.error(
+                    "Error HTTP %s en %s — cuerpo de respuesta: %s",
+                    resp.status_code,
+                    resp.url,
+                    resp.text[:500],
+                )
             resp.raise_for_status()
             page = resp.json()
 

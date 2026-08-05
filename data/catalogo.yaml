@@ -68,23 +68,77 @@ fuentes:
   - id: ipm
     nombre: "Índice de Pobreza Multidimensional"
     entidad: DANE
-    portal: "www.datos.gov.co (Socrata)"
-    catalogo_ref: "ntk3-fdqa"  # IPM 2024. Ver catalogo_ref_por_anio abajo.
-    catalogo_ref_por_anio:
-      2024: "ntk3-fdqa"  # https://www.datos.gov.co/dataset/Indice-de-Pobreza-Multidimensional-IPM-2024/ntk3-fdqa
-      2025: "vjih-49w8"  # https://www.datos.gov.co/dataset/Indice-de-Pobreza-Multidimensional-IPM-2025/vjih-49w8
+    portal: "microdatos.dane.gov.co (descarga manual, registro requerido)"
+    catalogo_ref: null  # el dataset de datos.gov.co (ntk3-fdqa) NO tiene API tabular habilitada (error Socrata: "no row or column access to non-tabular tables"); descartado.
+    catalogo_ref_por_anio: {}
     periodo: "2024-2025"
     unidad_analisis: hogar (indicadores agregados también disponibles)
-    acceso: abierto
+    acceso: registro
     estado: disponible
     notas: >
-      Dataset abierto vía Socrata en datos.gov.co, un dataset distinto
-      por año. Verificado 2026-08-04. Complementa con los boletines
-      técnicos DANE y, a nivel de hogar, con el cálculo propio a partir
-      de la GEIH.
+      Verificado 2026-08-04: descarga manual desde
+      microdatos.dane.gov.co/index.php/catalog/903, previo registro
+      gratuito. Trae 6 archivos (Hogares/Personas/Viviendas x
+      Nacional/Departamental), depositados en
+      data/0_raw/ipm/{nacional,departamental}/{hogares,personas,viviendas}.csv.
+      Procesados por src/1_integracion.py vía ARCHIVOS_LOCALES.
+      Hogares nacional: 79.125 filas, tasa de pobreza (POBRE=1): ~13.0%,
+      IPM promedio 0.195 (rango 0.0-0.86).
+    diccionario_variables:
+      # Nombres técnicos reales, extraídos del DDI XML oficial
+      # (DANE-DIMPE-POBREZA-MULTIDIMENSIONAL-2025.xml, 146 variables).
+      # NOTA: el DDI describe VARIAS bases relacionadas (hogar/persona,
+      # nacional/departamental) bajo el mismo <dataDscr>; hay nombres
+      # repetidos con mayúscula distinta (ej. IPM vs ipm, FEX_C vs fex_c)
+      # porque corresponden a archivos de datos diferentes dentro del
+      # mismo estudio — confirmar el nombre exacto por archivo cuando se
+      # descargue la base real (no solo la ficha DDI).
+      identificadores:
+        DIRECTORIO: "Identificador de hogar"
+        SECUENCIA_ENCUESTA: "Secuencia de la encuesta"
+        SECUENCIA_P: "Secuencia de persona"
+        FEX_C: "Factor de expansión (hogar)"
+        FEXP: "Factor de expansión (personas)"
+      privaciones_15:
+        logro_educativo: "Privación por bajo logro educativo"
+        analfabetismo: "Privación por analfabetismo"
+        inasistencia_escolar: "Privación por inasistencia escolar"
+        rezago_escolar: "Privación por rezago escolar"
+        atencion_integral: "Privación por barreras de acceso a atención integral primera infancia"
+        trabajo_infantil: "Privación por trabajo infantil"
+        desempleo_larga_duracion: "Privación por desempleo de larga duración"
+        empleo_formal: "Privación por tasa de empleo formal (informalidad)"
+        aseguramiento_salud: "Privación por no aseguramiento en salud"
+        barreras_acceso_salud: "Privación por barreras de acceso a salud"
+        acueducto: "Privación por no acceso a fuente de agua mejorada"
+        alcantarillado: "Privación por inadecuada eliminación de excretas"
+        pisos: "Privación por material inadecuado de pisos"
+        paredes: "Privación por material inadecuado de paredes exteriores"
+        hacinamiento: "Privación por hacinamiento crítico"
+      resultado:
+        ipm: "Índice de Pobreza Multidimensional (suma ponderada de privaciones)"
+        pobre: "Hogar clasificado como pobre (IPM >= 5/15)"
     variables_clave:
-      - ipm_hogar
-      - privaciones_por_dimension
+      # Lista plana para uso rápido en scripts (ver diccionario_variables
+      # arriba para el detalle y las notas de identificadores/factores
+      # de expansión).
+      - ipm
+      - pobre
+      - logro_educativo
+      - analfabetismo
+      - inasistencia_escolar
+      - rezago_escolar
+      - atencion_integral
+      - trabajo_infantil
+      - desempleo_larga_duracion
+      - empleo_formal
+      - aseguramiento_salud
+      - barreras_acceso_salud
+      - acueducto
+      - alcantarillado
+      - pisos
+      - paredes
+      - hacinamiento
 
   - id: rui
     nombre: "Registro Único de Víctimas"
