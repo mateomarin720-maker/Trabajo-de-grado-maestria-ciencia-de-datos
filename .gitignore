@@ -1,0 +1,56 @@
+# Archivos de entorno y dependencias de Python
+# ----------------------------------------------------------------
+.env
+.venv
+env/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Archivos de Jupyter Notebook
+# ----------------------------------------------------------------
+.ipynb_checkpoints
+
+# Archivos de configuración de IDEs y editores
+# ----------------------------------------------------------------
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Archivos generados por el sistema operativo
+# ----------------------------------------------------------------
+.DS_Store
+Thumbs.db
+
+# Datos sensibles del Sisbén IV y GEIH
+# ----------------------------------------------------------------
+# NO versionar microdatos individuales bajo ninguna circunstancia.
+data/0_raw/*
+!data/0_raw/README.md
+data/1_processed/*
+!data/1_processed/README.md
+data/2_models/*
+!data/2_models/README.md
+
+# Modelos entrenados y artefactos pesados
+# ----------------------------------------------------------------
+*.pkl
+*.joblib
+*.h5
+*.parquet
+
+# Reportes y logs
+# ----------------------------------------------------------------
+# docs/reports/*.pdf
+# docs/reports/*.html
+*.log
+
+# Credenciales y secretos
+# ----------------------------------------------------------------
+*credentials*
+*.key
+*.secret
+config.ini

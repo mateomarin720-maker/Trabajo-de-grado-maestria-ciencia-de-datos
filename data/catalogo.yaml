@@ -1,0 +1,106 @@
+# Catálogo de fuentes de datos — Proyecto Sisbén IV / Inferencia causal
+#
+# Este archivo documenta trazabilidad, tipo de acceso y estado de gestión
+# de cada fuente usada para la contrastación (GEIH, Sisbén IV, DPS, IPM,
+# RUI), siguiendo el mismo patrón de catálogo empleado en el proyecto
+# hermano `desarrollo_social_y_economico` (data/catalogo.yaml).
+#
+# Estado: pendiente | en_gestion | disponible
+# Acceso: abierto | registro | solicitud_institucional
+
+fuentes:
+
+  - id: geih
+    nombre: "Gran Encuesta Integrada de Hogares"
+    entidad: DANE
+    portal: "microdatos.dane.gov.co"
+    catalogo_ref: null  # completar con número de catálogo tras registro
+    periodo: "2024-2025 (anual)"
+    unidad_analisis: hogar / persona
+    acceso: registro
+    estado: pendiente
+    notas: >
+      Microdatos anonimizados disponibles previo registro en el Archivo
+      Nacional de Datos (ANDA) del DANE. Fuente primaria para pobreza
+      monetaria y multidimensional; ~315.000 hogares/año.
+    variables_clave:
+      - ingreso_percapita
+      - condicion_ocupacion
+      - informalidad_laboral
+      - composicion_hogar
+
+  - id: sisben_iv
+    nombre: "Sisbén IV — Registro Social de Hogares"
+    entidad: DNP
+    portal: "sisben.gov.co (solicitud académica ante DNP)"
+    catalogo_ref: null
+    periodo: "2020-2026 (registro continuo)"
+    unidad_analisis: hogar
+    acceso: solicitud_institucional
+    estado: pendiente
+    notas: >
+      Microdato para investigación académica solicitado directamente al
+      DNP. Variable de tratamiento del estudio: puntaje continuo (0-100)
+      y grupo de elegibilidad (A/B/C/D).
+    variables_clave:
+      - puntaje_sisben
+      - grupo_elegibilidad
+      - zona
+      - departamento
+
+  - id: dps
+    nombre: "Registros de programas de transferencias (DPS)"
+    entidad: "Departamento para la Prosperidad Social"
+    portal: "prosperidadsocial.gov.co"
+    catalogo_ref: null
+    periodo: "2023 (según disponibilidad)"
+    unidad_analisis: hogar / persona
+    acceso: solicitud_institucional
+    estado: pendiente
+    notas: >
+      Beneficiarios de Familias en Acción, Jóvenes en Acción, Colombia
+      Mayor e Ingreso Solidario. Permite vincular elegibilidad formal
+      con participación real en programas.
+    variables_clave:
+      - beneficiario_familias_accion
+      - beneficiario_ingreso_solidario
+
+  - id: ipm
+    nombre: "Índice de Pobreza Multidimensional"
+    entidad: DANE
+    portal: "www.datos.gov.co (Socrata)"
+    catalogo_ref: "ntk3-fdqa"  # IPM 2024. Ver catalogo_ref_por_anio abajo.
+    catalogo_ref_por_anio:
+      2024: "ntk3-fdqa"  # https://www.datos.gov.co/dataset/Indice-de-Pobreza-Multidimensional-IPM-2024/ntk3-fdqa
+      2025: "vjih-49w8"  # https://www.datos.gov.co/dataset/Indice-de-Pobreza-Multidimensional-IPM-2025/vjih-49w8
+    periodo: "2024-2025"
+    unidad_analisis: hogar (indicadores agregados también disponibles)
+    acceso: abierto
+    estado: disponible
+    notas: >
+      Dataset abierto vía Socrata en datos.gov.co, un dataset distinto
+      por año. Verificado 2026-08-04. Complementa con los boletines
+      técnicos DANE y, a nivel de hogar, con el cálculo propio a partir
+      de la GEIH.
+    variables_clave:
+      - ipm_hogar
+      - privaciones_por_dimension
+
+  - id: rui
+    nombre: "Registro Único de Víctimas"
+    entidad: "Unidad para las Víctimas (UARIV)"
+    portal: "unidadvictimas.gov.co"
+    catalogo_ref: null
+    periodo: vigente
+    unidad_analisis: persona / hogar
+    acceso: solicitud_institucional
+    estado: pendiente
+    notas: >
+      Utilizado como covariable de control (condición de víctima del
+      conflicto armado). Requiere convenio o solicitud institucional.
+    variables_clave:
+      - condicion_victima
+
+# Estrategia de vinculación (OE4): statistical matching a nivel municipal
+# usando el Registro Social de Hogares como puente de integración entre
+# GEIH y Sisbén IV. Ver docs/Anteproyecto_Sisben_IV.docx, sección 4.3.
