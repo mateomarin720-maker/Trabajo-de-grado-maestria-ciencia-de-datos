@@ -101,7 +101,9 @@ Detalle completo de marco teórico, metodología y cronograma en
   y el catálogo de fuentes ([`data/catalogo.yaml`](data/catalogo.yaml)).
   Los microdatos del Sisbén y GEIH **no se versionan**; ver `.gitignore`.
 - **`/docs`**: Documentación del proyecto — anteproyecto, DAG causal,
-  informes y reportes.
+  informes, reportes y el
+  [**diccionario de datos**](docs/DICCIONARIO_DATOS.md) (variables en uso,
+  tipos, distribución y estado por fuente).
 - **`/notebooks`**: Cuadernos de exploración, prototipado de DAGs y
   pruebas de identificación.
 - **`/src`**: Código fuente de producción (ETL, limpieza, preprocesamiento,

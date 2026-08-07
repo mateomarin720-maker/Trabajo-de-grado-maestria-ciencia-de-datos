@@ -10,7 +10,9 @@ se versiona** (ver `.gitignore`); solo se versionan estos `README.md` y
 
 El detalle de cada fuente (portal, tipo de acceso, identificador, período
 y estado de obtención) está documentado en
-[`catalogo.yaml`](catalogo.yaml). Resumen:
+[`catalogo.yaml`](catalogo.yaml). El diccionario completo de variables del
+IPM (146 variables, extraído del DDI oficial de DANE) está en
+[`diccionario_ipm_2025.md`](diccionario_ipm_2025.md). Resumen:
 
 | Fuente | Entidad | Tipo de acceso | Estado |
 |---|---|---|---|

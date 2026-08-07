@@ -212,6 +212,65 @@ def parse_carpeta_csv_a_parquet(
     }
 
 
+def parse_json_a_parquet(
+    input_path: str | Path,
+    output_path: str | Path,
+    fuente_id: str,
+    records_path: str | None = None,
+) -> dict[str, Any]:
+    """Convierte un JSON local (p. ej. exportado desde microdatos.dane.gov.co
+    cuando no ofrece CSV) a Parquet.
+
+    A diferencia de los CSV, los JSON de portales de datos suelen ser
+    manejables en memoria de una sola vez (no requieren chunks), pero si
+    el archivo es muy pesado, sepárenlo primero o avisen para adaptar
+    esta función a lectura por líneas (JSON Lines).
+
+    Args:
+        input_path: ruta al archivo .json descargado.
+        output_path: ruta de salida .parquet en data/0_raw/<fuente>/.
+        fuente_id: identificador de la fuente (para trazabilidad).
+        records_path: si el JSON viene envuelto en una clave (p. ej.
+            {"data": [...]} en vez de una lista plana [...]), indicar aquí
+            la clave (p. ej. "data").
+    """
+    import json
+
+    input_path = Path(input_path)
+    output_path = Path(output_path)
+
+    if not input_path.exists():
+        msg = f"Archivo no encontrado: {input_path}"
+        logger.error(msg)
+        return {"status": "error", "error": msg}
+
+    with open(input_path, encoding="utf-8") as f:
+        contenido = json.load(f)
+
+    if records_path:
+        contenido = contenido[records_path]
+
+    df = pd.json_normalize(contenido)
+    if df.empty:
+        logger.warning("El JSON no produjo filas: %s", input_path)
+        return {"status": "warning", "error": "Sin registros", "archivo": str(input_path)}
+
+    df["_ingestion_timestamp"] = datetime.now().isoformat()
+    df["_source"] = fuente_id
+    df["_source_file"] = input_path.name
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    df.to_parquet(output_path, index=False)
+
+    logger.info("Guardado: %s (%s filas)", output_path, f"{len(df):,}")
+    return {
+        "status": "success",
+        "archivo": str(output_path),
+        "registros": len(df),
+        "fuente": fuente_id,
+    }
+
+
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     print(

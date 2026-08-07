@@ -6,6 +6,11 @@ legibles tanto para audiencias técnicas como no técnicas.
 ## Contenido y artefactos
 
 ### Documentos fundamentales
+- **[`DICCIONARIO_DATOS.md`](DICCIONARIO_DATOS.md)**
+  - Diccionario de datos consolidado: variables efectivamente en uso
+    (identificadores, outcome, predictoras, tratamiento pendiente),
+    tipo, distribución real y estado por fuente. Se actualiza cada vez
+    que se integra una fuente nueva.
 - **[`Anteproyecto_Sisben_IV.docx`](Anteproyecto_Sisben_IV.docx)**
   - Documento formal de anteproyecto (abril 2026): introducción, marco
     teórico, revisión de literatura, objetivos general y específicos
