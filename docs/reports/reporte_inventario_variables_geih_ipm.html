@@ -1,0 +1,558 @@
+<title>Inventario de variables — GEIH e IPM 2024</title>
+<style>
+
+/* ---------- tokens ---------- */
+:root{
+  --bg:#F4F5F1;
+  --surface:#FFFFFF;
+  --surface-2:#EBEDE7;
+  --border:#D9DDD3;
+  --ink:#1C231E;
+  --ink-soft:#4B564C;
+  --muted:#707B70;
+  --accent:#2C6E63;
+  --accent-ink:#194B42;
+  --accent-soft:#E3EEE9;
+  --accent-2:#B5722E;
+  --accent-2-soft:#F5E9D9;
+  --good:#2C6E63;
+  --good-soft:#E3EEE9;
+  --warn:#B5722E;
+  --warn-soft:#F5E9D9;
+  --bad:#AC4430;
+  --bad-soft:#F5E2DC;
+  --code-bg:#EEF1EA;
+  --code-ink:#3B463C;
+  --shadow: 0 1px 2px rgba(28,35,30,0.06), 0 6px 16px -8px rgba(28,35,30,0.12);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#12160F;
+    --surface:#191F17;
+    --surface-2:#1F261C;
+    --border:#2C3527;
+    --ink:#E7ECE3;
+    --ink-soft:#B9C3B3;
+    --muted:#8A9585;
+    --accent:#67B39E;
+    --accent-ink:#9CD3C1;
+    --accent-soft:#1D2E28;
+    --accent-2:#D9A05E;
+    --accent-2-soft:#2E2517;
+    --good:#67B39E;
+    --good-soft:#1D2E28;
+    --warn:#D9A05E;
+    --warn-soft:#2E2517;
+    --bad:#DE9280;
+    --bad-soft:#33211B;
+    --code-bg:#1D2419;
+    --code-ink:#C7D0C1;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 20px -8px rgba(0,0,0,0.5);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#12160F;
+  --surface:#191F17;
+  --surface-2:#1F261C;
+  --border:#2C3527;
+  --ink:#E7ECE3;
+  --ink-soft:#B9C3B3;
+  --muted:#8A9585;
+  --accent:#67B39E;
+  --accent-ink:#9CD3C1;
+  --accent-soft:#1D2E28;
+  --accent-2:#D9A05E;
+  --accent-2-soft:#2E2517;
+  --good:#67B39E;
+  --good-soft:#1D2E28;
+  --warn:#D9A05E;
+  --warn-soft:#2E2517;
+  --bad:#DE9280;
+  --bad-soft:#33211B;
+  --code-bg:#1D2419;
+  --code-ink:#C7D0C1;
+  --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 20px -8px rgba(0,0,0,0.5);
+}
+
+/* ---------- base ---------- */
+*{box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family: -apple-system, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size:16px;
+  line-height:1.55;
+  overflow-x:hidden;
+}
+h1,h2,h3,h4{
+  font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif;
+  font-weight:600;
+  color:var(--ink);
+  text-wrap:balance;
+  margin:0 0 .4em 0;
+}
+p{margin:0 0 1em 0; max-width:68ch; color:var(--ink-soft);}
+code, .mono{
+  font-family: "SF Mono", "Cascadia Code", Consolas, "Liberation Mono", monospace;
+  font-variant-numeric: tabular-nums;
+}
+a{color:var(--accent-ink);}
+::selection{background:var(--accent-soft); color:var(--accent-ink);}
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:3px;}
+
+/* ---------- masthead ---------- */
+.masthead{
+  border-bottom:1px solid var(--border);
+  padding:2.6rem 1.5rem 1.9rem;
+  background:
+    linear-gradient(180deg, var(--surface-2), var(--bg));
+}
+.masthead-inner{max-width:980px; margin:0 auto;}
+.eyebrow{
+  font-family:-apple-system,"Segoe UI",sans-serif;
+  font-size:.72rem;
+  letter-spacing:.11em;
+  text-transform:uppercase;
+  color:var(--accent-ink);
+  font-weight:700;
+  margin-bottom:.7rem;
+  display:block;
+}
+.masthead h1{font-size:clamp(1.7rem, 1.1rem + 2.4vw, 2.5rem); letter-spacing:-.01em; max-width:20ch;}
+.masthead .subtitle{font-size:1.05rem; margin-top:.3rem; max-width:56ch;}
+.meta-row{
+  display:flex; flex-wrap:wrap; gap:.5rem 1.6rem;
+  margin-top:1.3rem; font-size:.86rem; color:var(--muted);
+}
+.meta-row strong{color:var(--ink-soft); font-weight:600;}
+.status-pills{display:flex; flex-wrap:wrap; gap:.5rem; margin-top:1.4rem;}
+.pill{
+  display:inline-flex; align-items:center; gap:.4rem;
+  padding:.32rem .7rem; border-radius:100px;
+  font-size:.78rem; font-weight:600; border:1px solid transparent;
+}
+.pill .dot{width:.5rem;height:.5rem;border-radius:50%;flex:none;}
+.pill.good{background:var(--good-soft); color:var(--good);}
+.pill.good .dot{background:var(--good);}
+.pill.warn{background:var(--warn-soft); color:var(--warn);}
+.pill.warn .dot{background:var(--warn);}
+
+/* ---------- nav ---------- */
+.toc{
+  position:sticky; top:0; z-index:20;
+  background:color-mix(in srgb, var(--surface) 92%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom:1px solid var(--border);
+}
+.toc-inner{
+  max-width:980px; margin:0 auto; padding:0 1.5rem;
+  display:flex; gap:1.4rem; overflow-x:auto;
+  font-size:.85rem;
+}
+.toc a{
+  white-space:nowrap; padding:.85rem 0; color:var(--muted);
+  text-decoration:none; border-bottom:2px solid transparent; font-weight:600;
+}
+.toc a:hover{color:var(--ink);}
+
+/* ---------- layout ---------- */
+main{max-width:980px; margin:0 auto; padding:0 1.5rem;}
+section{padding:3rem 0; border-bottom:1px solid var(--border);}
+section:last-of-type{border-bottom:none;}
+.section-head{display:flex; align-items:baseline; gap:.7rem; margin-bottom:.3rem;}
+.section-num{font-family:Georgia,serif; font-size:1rem; color:var(--muted);}
+section h2{font-size:1.5rem;}
+.section-intro{margin-bottom:1.7rem;}
+
+/* ---------- tables ---------- */
+.table-wrap{overflow-x:auto; border:1px solid var(--border); border-radius:10px; box-shadow:var(--shadow); background:var(--surface);}
+table{border-collapse:collapse; width:100%; font-size:.88rem; min-width:560px;}
+thead th{
+  text-align:left; font-size:.72rem; text-transform:uppercase; letter-spacing:.06em;
+  color:var(--muted); font-weight:700; padding:.65rem .85rem;
+  background:var(--surface-2); border-bottom:1px solid var(--border);
+  position:sticky; top:0;
+}
+tbody td{padding:.62rem .85rem; border-bottom:1px solid var(--border); color:var(--ink-soft); vertical-align:top;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover{background:var(--surface-2);}
+td.num, th.num{text-align:right; font-variant-numeric:tabular-nums;}
+td.mono{font-family:"SF Mono",Consolas,monospace; color:var(--ink);}
+td strong{color:var(--ink); font-weight:600;}
+.tag{
+  display:inline-block; padding:.12rem .5rem; border-radius:6px;
+  font-size:.72rem; font-weight:700; font-family:-apple-system,sans-serif;
+}
+.tag.hogar{background:var(--accent-soft); color:var(--accent-ink);}
+.tag.persona{background:var(--surface-2); color:var(--ink-soft); border:1px solid var(--border);}
+.tag.limpio{background:var(--good-soft); color:var(--good);}
+.tag.raw{background:var(--warn-soft); color:var(--warn);}
+
+/* ---------- cards / grids ---------- */
+.card-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(210px,1fr)); gap:.9rem; margin-top:1.4rem;}
+.stat-card{
+  background:var(--surface); border:1px solid var(--border); border-radius:10px;
+  padding:1.1rem 1.2rem; box-shadow:var(--shadow);
+}
+.stat-card .num{font-family:Georgia,serif; font-size:1.9rem; color:var(--accent-ink); font-variant-numeric:tabular-nums; line-height:1;}
+.stat-card .label{font-size:.82rem; color:var(--muted); margin-top:.45rem;}
+
+/* ---------- callouts ---------- */
+.callout{
+  border-radius:10px; padding:1.1rem 1.3rem; margin:1.3rem 0;
+  border:1px solid var(--border); background:var(--surface);
+  box-shadow:var(--shadow);
+}
+.callout.finding{border-left:4px solid var(--bad); background:var(--bad-soft);}
+.callout.finding h4{color:var(--bad); font-family:-apple-system,sans-serif; font-size:.95rem; text-transform:uppercase; letter-spacing:.03em;}
+.callout.note{border-left:4px solid var(--accent); }
+.callout.note h4{color:var(--accent-ink); font-family:-apple-system,sans-serif; font-size:.95rem;}
+.callout p{max-width:none; margin-bottom:.5em;}
+.callout p:last-child{margin-bottom:0;}
+
+/* ---------- appendix / details ---------- */
+details{
+  border:1px solid var(--border); border-radius:10px; background:var(--surface);
+  margin-bottom:.8rem; overflow:hidden; box-shadow:var(--shadow);
+}
+summary{
+  cursor:pointer; padding:.9rem 1.1rem; font-weight:600; list-style:none;
+  display:flex; align-items:center; justify-content:space-between; gap:1rem;
+  font-size:.92rem;
+}
+summary::-webkit-details-marker{display:none;}
+summary .chev{transition:transform .15s ease; color:var(--muted); flex:none;}
+details[open] summary .chev{transform:rotate(90deg);}
+summary .summary-meta{color:var(--muted); font-weight:500; font-size:.82rem; font-family:"SF Mono",monospace;}
+.col-grid{
+  display:grid; grid-template-columns:repeat(auto-fill, minmax(128px,1fr));
+  gap:.4rem; padding:0 1.1rem 1.1rem; max-height:340px; overflow-y:auto;
+}
+.col-chip{
+  font-family:"SF Mono",Consolas,monospace; font-size:.76rem; color:var(--code-ink);
+  background:var(--code-bg); border-radius:5px; padding:.32rem .5rem;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+
+/* ---------- footer ---------- */
+footer{max-width:980px; margin:0 auto; padding:2.2rem 1.5rem 3rem; font-size:.82rem; color:var(--muted);}
+
+@media (max-width:640px){
+  .masthead{padding:2rem 1.1rem 1.5rem;}
+  main{padding:0 1.1rem;}
+  section{padding:2.2rem 0;}
+}
+</style>
+
+<div class="masthead">
+  <div class="masthead-inner">
+    <span class="eyebrow">Documento de trabajo &middot; inferencia causal / Sisbén IV</span>
+    <h1>Inventario de variables y fuentes</h1>
+    <p class="subtitle">Comparación de columnas y variables entre GEIH e IPM 2024, estado de integridad de cada fuente, y correspondencia de variables de vivienda entre ambas encuestas — preparado para revisión del director de tesis y compañeros de maestría.</p>
+    <div class="meta-row">
+      <span><strong>Proyecto:</strong> Inferencia causal sobre la clasificación en el Sisbén IV — Maestría en Ciencia de Datos, USTA</span>
+      <span><strong>Fecha:</strong> 9 de agosto de 2026</span>
+    </div>
+    <div class="status-pills">
+      <span class="pill good"><span class="dot"></span>GEIH — disponible, 12/12 meses validados</span>
+      <span class="pill good"><span class="dot"></span>IPM — disponible, Hogares limpio</span>
+      <span class="pill warn"><span class="dot"></span>Sisbén IV, DPS, RUI — solicitud institucional pendiente</span>
+    </div>
+  </div>
+</div>
+
+<nav class="toc">
+  <div class="toc-inner">
+    <a href="#resumen">Resumen</a>
+    <a href="#geih">GEIH</a>
+    <a href="#ipm">IPM</a>
+    <a href="#armonizacion">Armonización</a>
+    <a href="#hallazgos">Hallazgos</a>
+    <a href="#pendientes">Fuentes pendientes</a>
+    <a href="#apendice">Apéndice de columnas</a>
+  </div>
+</nav>
+
+<main>
+
+<section id="resumen">
+  <div class="section-head"><span class="section-num">01</span><h2>Resumen de fuentes</h2></div>
+  <p class="section-intro">Cinco fuentes están definidas en <code>data/catalogo.yaml</code> para el diseño de contrastación (GEIH, Sisbén IV, DPS, IPM, RUI). Dos ya están descargadas, procesadas a Parquet y validadas: GEIH e IPM. Las otras tres dependen de solicitud institucional y aún no han llegado.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Fuente</th>
+          <th>Entidad</th>
+          <th>Acceso</th>
+          <th>Estado</th>
+          <th class="num">Tablas / módulos</th>
+          <th>Rol en el diseño</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>GEIH</strong></td>
+          <td>DANE</td>
+          <td>Registro (gratuito)</td>
+          <td><span class="tag limpio">Disponible</span></td>
+          <td class="num">8 módulos × 12 meses</td>
+          <td>Confusores y outcomes de mercado laboral</td>
+        </tr>
+        <tr>
+          <td><strong>IPM</strong></td>
+          <td>DANE</td>
+          <td>Registro (gratuito)</td>
+          <td><span class="tag limpio">Disponible</span></td>
+          <td class="num">3 tablas (Hogares/Personas/Viviendas)</td>
+          <td>Outcome de bienestar / pobreza latente</td>
+        </tr>
+        <tr>
+          <td><strong>Sisbén IV</strong></td>
+          <td>DNP</td>
+          <td>Solicitud institucional</td>
+          <td><span class="tag raw">Pendiente</span></td>
+          <td class="num">—</td>
+          <td>Variable de tratamiento (puntaje / grupo)</td>
+        </tr>
+        <tr>
+          <td><strong>DPS</strong></td>
+          <td>Prosperidad Social</td>
+          <td>Solicitud institucional</td>
+          <td><span class="tag raw">Pendiente</span></td>
+          <td class="num">—</td>
+          <td>Participación real en programas</td>
+        </tr>
+        <tr>
+          <td><strong>RUI</strong></td>
+          <td>UARIV</td>
+          <td>Solicitud institucional</td>
+          <td><span class="tag raw">Pendiente</span></td>
+          <td class="num">—</td>
+          <td>Confusor: condición de víctima</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card-grid">
+    <div class="stat-card"><div class="num">8</div><div class="label">módulos GEIH, 12/12 meses de 2024 completos</div></div>
+    <div class="stat-card"><div class="num">406</div><div class="label">columnas únicas distintas entre los 8 módulos de GEIH</div></div>
+    <div class="stat-card"><div class="num">79.125</div><div class="label">hogares en IPM Hogares Nacional (limpio)</div></div>
+    <div class="stat-card"><div class="num">0</div><div class="label">de 5 fuentes de tratamiento/confusores adicionales disponibles aún</div></div>
+  </div>
+</section>
+
+<section id="geih">
+  <div class="section-head"><span class="section-num">02</span><h2>GEIH 2024 — inventario por módulo</h2></div>
+  <p class="section-intro">Conteos de la corrida de enero 2024 (mes de referencia documentado en el catálogo). Todos los módulos comparten la llave <code>DIRECTORIO + SECUENCIA_P + HOGAR</code> (agregando <code>ORDEN</code> para los módulos a nivel persona). Formato de origen: todos vía CSV salvo agosto, recuperado por fallback a <code>.DTA</code> (ver hallazgos).</p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Módulo</th>
+          <th>Nivel</th>
+          <th class="num">Filas (ene-2024)</th>
+          <th class="num">Columnas</th>
+          <th>Contenido</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="mono">hogar_vivienda</td><td><span class="tag hogar">hogar</span></td><td class="num">24.247</td><td class="num">48</td><td>Vivienda, servicios, tenencia — base de la llave de hogar</td></tr>
+        <tr><td class="mono">caracteristicas_generales</td><td><span class="tag persona">persona</span></td><td class="num">70.648</td><td class="num">67</td><td>Demografía, salud, educación</td></tr>
+        <tr><td class="mono">fuerza_trabajo</td><td><span class="tag persona">persona</span></td><td class="num">55.738</td><td class="num">43</td><td>Condición de actividad (PET/FT/FFT)</td></tr>
+        <tr><td class="mono">ocupados</td><td><span class="tag persona">persona (subm. ocupados)</span></td><td class="num">28.815</td><td class="num">200</td><td>Empleo: ingreso laboral, informalidad, rama, oficio</td></tr>
+        <tr><td class="mono">no_ocupados</td><td><span class="tag persona">persona (subm. no ocupados)</span></td><td class="num">26.923</td><td class="num">37</td><td>Búsqueda de empleo, cesantía</td></tr>
+        <tr><td class="mono">otras_formas_trabajo</td><td><span class="tag persona">persona</span></td><td class="num">55.738</td><td class="num">112</td><td>Trabajo no remunerado, autoconsumo, especie</td></tr>
+        <tr><td class="mono">otros_ingresos</td><td><span class="tag persona">persona</span></td><td class="num">55.738</td><td class="num">59</td><td>Ingresos no laborales (arriendos, pensiones, subsidios)</td></tr>
+        <tr><td class="mono">migracion</td><td><span class="tag persona">persona</span></td><td class="num">70.648</td><td class="num">43</td><td>Migración interna e internacional</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="ipm">
+  <div class="section-head"><span class="section-num">03</span><h2>IPM 2025 (datos 2024) — inventario por tabla</h2></div>
+  <p class="section-intro">A diferencia de GEIH, IPM llega en 3 tablas separadas por unidad de análisis. Solo <strong>Hogares</strong> pasó por <code>2_limpieza.py</code>; Personas y Viviendas siguen en <code>data/0_raw/</code> sin tipar — están pendientes, y su llave de unión a Hogares no cuadra todavía (ver hallazgos).</p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Tabla</th>
+          <th class="num">Filas</th>
+          <th class="num">Columnas</th>
+          <th>Estado</th>
+          <th>Contenido</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="mono">Hogares</td><td class="num">79.125</td><td class="num">31</td><td><span class="tag limpio">Limpio</span></td><td>15 privaciones Alkire-Foster + IPM + POBRE (outcome)</td></tr>
+        <tr><td class="mono">Personas</td><td class="num">212.617</td><td class="num">33</td><td><span class="tag raw">Raw</span></td><td>Demografía, educación, salud, trabajo (códigos DANE sin tipar)</td></tr>
+        <tr><td class="mono">Viviendas</td><td class="num">78.913</td><td class="num">8</td><td><span class="tag raw">Raw</span></td><td>Materiales, acueducto, alcantarillado</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="armonizacion">
+  <div class="section-head"><span class="section-num">04</span><h2>Armonización de variables de vivienda: GEIH ↔ IPM</h2></div>
+  <p class="section-intro">Para el hot-deck (GEIH/IPM → proxy del puntaje Sisbén) y el eventual matching estadístico, importa saber si un mismo concepto usa el <em>mismo código</em> de pregunta DANE en ambas encuestas o si hay que mapearlo manualmente. Solo un caso comparte código literal; el resto requiere armonización explícita.</p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Concepto</th>
+          <th>Código en GEIH</th>
+          <th>Código en IPM</th>
+          <th>¿Mismo código?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Número de cuartos del hogar</td><td class="mono">P5010 <span style="color:var(--muted)">(hogar_vivienda)</span></td><td class="mono">P5010 <span style="color:var(--muted)">(Hogares)</span></td><td><span class="tag limpio">Sí</span></td></tr>
+        <tr><td>Material de paredes exteriores</td><td class="mono">P4020 <span style="color:var(--muted)">(hogar_vivienda)</span></td><td class="mono">P4005 <span style="color:var(--muted)">(Viviendas)</span></td><td><span class="tag raw">No — mapear</span></td></tr>
+        <tr><td>Material predominante de pisos</td><td class="mono">P4030S1 <span style="color:var(--muted)">(hogar_vivienda)</span></td><td class="mono">P4015 <span style="color:var(--muted)">(Viviendas)</span></td><td><span class="tag raw">No — mapear</span></td></tr>
+        <tr><td>Cuartos usados para dormir (hacinamiento)</td><td class="mono">P5020 <span style="color:var(--muted)">(hogar_vivienda)</span></td><td>— <span style="color:var(--muted)">(IPM entrega "hacinamiento" ya como privación binaria)</span></td><td><span class="tag raw">No comparable directo</span></td></tr>
+        <tr><td>Acueducto / alcantarillado</td><td>— <span style="color:var(--muted)">(sin código documentado aún en el repo)</span></td><td class="mono">P8520S5 / P8520S3 <span style="color:var(--muted)">(Viviendas)</span></td><td><span class="tag raw">GEIH sin documentar</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout note">
+    <h4>Implicación para el hot-deck</h4>
+    <p>Solo <code>P5010</code> puede cruzarse por código sin ambigüedad. Paredes y pisos existen conceptualmente en ambas fuentes pero con numeración de pregunta distinta — antes de construir el proxy del puntaje Sisbén hay que decidir explícitamente el mapeo de categorías (ej. qué valor de <code>P4020</code> equivale a qué valor de <code>P4005</code>), no asumir que el join es directo.</p>
+  </div>
+</section>
+
+<section id="hallazgos">
+  <div class="section-head"><span class="section-num">05</span><h2>Hallazgos de calidad de datos</h2></div>
+  <p class="section-intro">Tres hallazgos de esta revisión, de mayor a menor impacto sobre el análisis.</p>
+
+  <div class="callout finding">
+    <h4>1 · Documentación de IPM Viviendas no coincide con los datos reales</h4>
+    <p><code>docs/DICCIONARIO_DATOS.md</code> (sección 3.c) lista <code>P5010</code>, <code>P8526</code> y <code>P8530</code> como columnas de la tabla <strong>Viviendas</strong>. Verificado contra el Parquet real: esas tres columnas están en <strong>Hogares</strong>, no en Viviendas. La tabla Viviendas real solo trae 8 columnas (<code>DIRECTORIO</code>, <code>SECUENCIA_ENCUESTA</code>, <code>SECUENCIA_P</code>, <code>P3</code>, <code>P4005</code>, <code>P4015</code>, <code>P8520S3</code>, <code>P8520S5</code>), no las 12 que indica el encabezado de esa sección. Recomendación: corregir el diccionario antes de que alguien intente unir esas 3 columnas por la tabla equivocada.</p>
+  </div>
+
+  <div class="callout finding">
+    <h4>2 · GEIH tenía 3 meses de 2024 sin procesar y 1 parcial (ya corregido)</h4>
+    <p>Antes de esta revisión: marzo y abril no generaban ningún Parquet (bug en <code>geih_loader.py</code> — tomaba la primera carpeta "CSV" encontrada, que en esos dos meses estaba vacía por cómo quedó descomprimido el ZIP), y agosto solo tenía 1 de 8 módulos en CSV en el origen. Corregido: búsqueda de archivos en toda la carpeta del mes + fallback automático a <code>.DTA</code> cuando el CSV falta. Estado actual: <strong>12/12 meses, 8/8 módulos, 0 duplicados de llave hogar, 33/33 departamentos en cada mes</strong>. Detalle en <code>docs/reports/reporte_completitud_geih.csv</code> y <code>data/catalogo.yaml</code>.</p>
+  </div>
+
+  <div class="callout note">
+    <h4>3 · IPM Personas y Viviendas no tienen limpieza ni llave de unión a Hogares todavía</h4>
+    <p>Solo Hogares pasó por <code>2_limpieza.py</code>. El join Hogares↔Personas por <code>DIRECTORIO+SECUENCIA_ENCUESTA+SECUENCIA_P</code> no cuadra (133.109 combinaciones de Personas sin equivalente en Hogares, verificado 2026-08-07) — no se debe forzar hasta confirmar con la ficha metodológica DANE o soporte ANDA. Mientras tanto cada tabla se usa por separado.</p>
+  </div>
+</section>
+
+<section id="pendientes">
+  <div class="section-head"><span class="section-num">06</span><h2>Fuentes aún no disponibles</h2></div>
+  <p class="section-intro">Sisbén IV, DPS y RUI dependen de solicitud institucional y no tienen microdato en el repo todavía. Se documentan aquí las variables que se esperan de cada una, según el diseño en <code>data/catalogo.yaml</code> y el anteproyecto.</p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Fuente</th><th>Variable esperada</th><th>Rol</th><th>Estado del trámite</th></tr>
+      </thead>
+      <tbody>
+        <tr><td rowspan="2"><strong>Sisbén IV</strong></td><td class="mono">puntaje_sisben</td><td>Tratamiento (continuo, 0–100)</td><td rowspan="2">Solicitud enviada, sin respuesta del DNP</td></tr>
+        <tr><td class="mono">grupo_elegibilidad</td><td>Tratamiento (categórico A/B/C/D)</td></tr>
+        <tr><td rowspan="2"><strong>DPS</strong></td><td class="mono">beneficiario_familias_accion</td><td>Participación real en programa</td><td rowspan="2">Solicitud no enviada aún</td></tr>
+        <tr><td class="mono">beneficiario_ingreso_solidario</td><td>Participación real en programa</td></tr>
+        <tr><td><strong>RUI</strong></td><td class="mono">condicion_victima</td><td>Confusor (conflicto armado)</td><td>Solicitud no enviada aún</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="apendice">
+  <div class="section-head"><span class="section-num">07</span><h2>Apéndice — columnas completas por módulo/tabla</h2></div>
+  <p class="section-intro">Listado íntegro de columnas (excluye las de trazabilidad <code>_ingestion_timestamp</code>, <code>_source</code>, <code>_source_file</code>). Los códigos <code>P####</code> son preguntas DANE sin re-etiquetar todavía — ver <code>docs/DICCIONARIO_DATOS.md</code> para los que ya tienen traducción.</p>
+
+  <h3 style="font-size:1.05rem; margin:1.6rem 0 .6rem;">GEIH</h3>
+
+  <details>
+    <summary><span>hogar_vivienda</span><span class="summary-meta chev">48 columnas ▸</span></summary>
+    <div class="col-grid">
+      <div class="col-chip">PERIODO</div><div class="col-chip">MES</div><div class="col-chip">PER</div><div class="col-chip">DIRECTORIO</div><div class="col-chip">SECUENCIA_P</div><div class="col-chip">HOGAR</div><div class="col-chip">REGIS</div><div class="col-chip">AREA</div><div class="col-chip">CLASE</div><div class="col-chip">FEX_C18</div><div class="col-chip">DPTO</div><div class="col-chip">P4000</div><div class="col-chip">P4010</div><div class="col-chip">P4020</div><div class="col-chip">P4030S1</div><div class="col-chip">P4030S1A1</div><div class="col-chip">P4030S2</div><div class="col-chip">P4030S3</div><div class="col-chip">P4030S4</div><div class="col-chip">P4030S4A1</div><div class="col-chip">P4030S5</div><div class="col-chip">P70</div><div class="col-chip">P5000</div><div class="col-chip">P5010</div><div class="col-chip">P5020</div><div class="col-chip">P5030</div><div class="col-chip">P5040</div><div class="col-chip">P5050</div><div class="col-chip">P5070</div><div class="col-chip">P5080</div><div class="col-chip">P5090</div><div class="col-chip">P5090S1</div><div class="col-chip">P5100</div><div class="col-chip">P5110</div><div class="col-chip">P5130</div><div class="col-chip">P5140</div><div class="col-chip">P5222S1</div><div class="col-chip">P5222S2</div><div class="col-chip">P5222S3</div><div class="col-chip">P5222S4</div><div class="col-chip">P5222S5</div><div class="col-chip">P5222S6</div><div class="col-chip">P5222S7</div><div class="col-chip">P5222S8</div><div class="col-chip">P5222S9</div><div class="col-chip">P5222S10</div><div class="col-chip">P5222S8A1</div><div class="col-chip">P6008</div>
+    </div>
+  </details>
+
+  <details>
+    <summary><span>caracteristicas_generales</span><span class="summary-meta chev">67 columnas ▸</span></summary>
+    <div class="col-grid">
+      <div class="col-chip">PERIODO</div><div class="col-chip">MES</div><div class="col-chip">PER</div><div class="col-chip">DIRECTORIO</div><div class="col-chip">SECUENCIA_P</div><div class="col-chip">ORDEN</div><div class="col-chip">HOGAR</div><div class="col-chip">REGIS</div><div class="col-chip">AREA</div><div class="col-chip">CLASE</div><div class="col-chip">FEX_C18</div><div class="col-chip">DPTO</div><div class="col-chip">PT</div><div class="col-chip">P6016</div><div class="col-chip">P3271</div><div class="col-chip">P6040</div><div class="col-chip">P6030S1</div><div class="col-chip">P6030S3</div><div class="col-chip">P6050</div><div class="col-chip">P6083</div><div class="col-chip">P6083S1</div><div class="col-chip">P6081</div><div class="col-chip">P6081S1</div><div class="col-chip">P2057</div><div class="col-chip">P2059</div><div class="col-chip">P2061</div><div class="col-chip">P6080</div><div class="col-chip">P6080S1</div><div class="col-chip">P6080S1A1</div><div class="col-chip">P6070</div><div class="col-chip">P6071</div><div class="col-chip">P6071S1</div><div class="col-chip">P3147S1</div><div class="col-chip">P3147S2</div><div class="col-chip">P3147S3</div><div class="col-chip">P3147S4</div><div class="col-chip">P3147S5</div><div class="col-chip">P3147S6</div><div class="col-chip">P3147S7</div><div class="col-chip">P3147S8</div><div class="col-chip">P3147S9</div><div class="col-chip">P3147S10</div><div class="col-chip">P3147S11</div><div class="col-chip">P3147S10A1</div><div class="col-chip">P6090</div><div class="col-chip">P6100</div><div class="col-chip">P6110</div><div class="col-chip">P6120</div><div class="col-chip">P1906S1</div><div class="col-chip">P1906S2</div><div class="col-chip">P1906S3</div><div class="col-chip">P1906S4</div><div class="col-chip">P1906S5</div><div class="col-chip">P1906S6</div><div class="col-chip">P1906S7</div><div class="col-chip">P1906S8</div><div class="col-chip">P6160</div><div class="col-chip">P6170</div><div class="col-chip">P3041</div><div class="col-chip">P3042</div><div class="col-chip">P3042S1</div><div class="col-chip">P3042S2</div><div class="col-chip">P3043</div><div class="col-chip">P3043S1</div><div class="col-chip">P3038</div><div class="col-chip">P3039</div><div class="col-chip">POB_MAY18</div>
+    </div>
+  </details>
+
+  <details>
+    <summary><span>fuerza_trabajo</span><span class="summary-meta chev">43 columnas ▸</span></summary>
+    <div class="col-grid">
+      <div class="col-chip">PERIODO</div><div class="col-chip">MES</div><div class="col-chip">PER</div><div class="col-chip">DIRECTORIO</div><div class="col-chip">SECUENCIA_P</div><div class="col-chip">ORDEN</div><div class="col-chip">HOGAR</div><div class="col-chip">REGIS</div><div class="col-chip">AREA</div><div class="col-chip">CLASE</div><div class="col-chip">FEX_C18</div><div class="col-chip">DPTO</div><div class="col-chip">FT</div><div class="col-chip">FFT</div><div class="col-chip">PET</div><div class="col-chip">P6240</div><div class="col-chip">P6240S1</div><div class="col-chip">P6240S2</div><div class="col-chip">P6250</div><div class="col-chip">P6260</div><div class="col-chip">P6260S1</div><div class="col-chip">P6260S1A1</div><div class="col-chip">P6260S2</div><div class="col-chip">P6270</div><div class="col-chip">P6280</div><div class="col-chip">P6290</div><div class="col-chip">P3362S1</div><div class="col-chip">P3362S2</div><div class="col-chip">P3362S3</div><div class="col-chip">P3362S4</div><div class="col-chip">P3362S5</div><div class="col-chip">P3362S6</div><div class="col-chip">P3362S7</div><div class="col-chip">P3362S8</div><div class="col-chip">P3362S7A1</div><div class="col-chip">P6300</div><div class="col-chip">P6310</div><div class="col-chip">P6310S1</div><div class="col-chip">P6320</div><div class="col-chip">P6330</div><div class="col-chip">P6340</div><div class="col-chip">P6350</div><div class="col-chip">P6351</div>
+    </div>
+  </details>
+
+  <details>
+    <summary><span>ocupados</span><span class="summary-meta chev">200 columnas ▸</span></summary>
+    <div class="col-grid">
+      <div class="col-chip">PERIODO</div><div class="col-chip">MES</div><div class="col-chip">PER</div><div class="col-chip">DIRECTORIO</div><div class="col-chip">SECUENCIA_P</div><div class="col-chip">ORDEN</div><div class="col-chip">HOGAR</div><div class="col-chip">REGIS</div><div class="col-chip">AREA</div><div class="col-chip">CLASE</div><div class="col-chip">FEX_C18</div><div class="col-chip">DPTO</div><div class="col-chip">FT</div><div class="col-chip">P3044S2</div><div class="col-chip">P6440</div><div class="col-chip">P6450</div><div class="col-chip">P6460</div><div class="col-chip">P6460S1</div><div class="col-chip">P6400</div><div class="col-chip">P6410</div><div class="col-chip">P6422</div><div class="col-chip">P6420S2</div><div class="col-chip">P6424S1</div><div class="col-chip">P6424S2</div><div class="col-chip">P6424S3</div><div class="col-chip">P6424S5</div><div class="col-chip">P6426</div><div class="col-chip">P6430</div><div class="col-chip">P6430S1</div><div class="col-chip">P3045S1</div><div class="col-chip">P3045S2</div><div class="col-chip">P3045S3</div><div class="col-chip">P3046</div><div class="col-chip">P3363</div><div class="col-chip">P9440</div><div class="col-chip">P6500</div><div class="col-chip">P3364</div><div class="col-chip">P3364S1</div><div class="col-chip">P6510</div><div class="col-chip">P6510S1</div><div class="col-chip">P6510S2</div><div class="col-chip">P6590</div><div class="col-chip">P6590S1</div><div class="col-chip">P6600</div><div class="col-chip">P6600S1</div><div class="col-chip">P6610</div><div class="col-chip">P6610S1</div><div class="col-chip">P6620</div><div class="col-chip">P6620S1</div><div class="col-chip">P6585S1</div><div class="col-chip">P6585S1A1</div><div class="col-chip">P6585S1A2</div><div class="col-chip">P6585S2</div><div class="col-chip">P6585S2A1</div><div class="col-chip">P6585S2A2</div><div class="col-chip">P6585S3</div><div class="col-chip">P6585S3A1</div><div class="col-chip">P6585S3A2</div><div class="col-chip">P6585S4</div><div class="col-chip">P6585S4A1</div><div class="col-chip">P6585S4A2</div><div class="col-chip">P6545</div><div class="col-chip">P6545S1</div><div class="col-chip">P6545S2</div><div class="col-chip">P6580</div><div class="col-chip">P6580S1</div><div class="col-chip">P6580S2</div><div class="col-chip">P6630S1</div><div class="col-chip">P6630S1A1</div><div class="col-chip">P6630S2</div><div class="col-chip">P6630S2A1</div><div class="col-chip">P6630S3</div><div class="col-chip">P6630S3A1</div><div class="col-chip">P6630S4</div><div class="col-chip">P6630S4A1</div><div class="col-chip">P6630S6</div><div class="col-chip">P6630S6A1</div><div class="col-chip">P6640</div><div class="col-chip">P6640S1</div><div class="col-chip">P1800</div><div class="col-chip">P1800S1</div><div class="col-chip">P1801S1</div><div class="col-chip">P1801S2</div><div class="col-chip">P1801S3</div><div class="col-chip">P1802</div><div class="col-chip">P3047</div><div class="col-chip">P3048</div><div class="col-chip">P3049</div><div class="col-chip">P6765</div><div class="col-chip">P6765S1</div><div class="col-chip">P3051</div><div class="col-chip">P3051S1</div><div class="col-chip">P3052</div><div class="col-chip">P3052S1</div><div class="col-chip">P3053</div><div class="col-chip">P3365</div><div class="col-chip">P3365S1</div><div class="col-chip">P3054</div><div class="col-chip">P3054S1</div><div class="col-chip">P3055</div><div class="col-chip">P3055S1</div><div class="col-chip">P3056</div><div class="col-chip">P3057</div><div class="col-chip">P6760</div><div class="col-chip">P3058S1</div><div class="col-chip">P3058S2</div><div class="col-chip">P3058S3</div><div class="col-chip">P3058S4</div><div class="col-chip">P3058S5</div><div class="col-chip">P3059</div><div class="col-chip">P3061</div><div class="col-chip">P3062S1</div><div class="col-chip">P3062S2</div><div class="col-chip">P3062S3</div><div class="col-chip">P3062S4</div><div class="col-chip">P3062S5</div><div class="col-chip">P3062S6</div><div class="col-chip">P3062S7</div><div class="col-chip">P3062S8</div><div class="col-chip">P3062S9</div><div class="col-chip">P3063</div><div class="col-chip">P3063S1</div><div class="col-chip">P3064</div><div class="col-chip">P3064S1</div><div class="col-chip">P3065</div><div class="col-chip">P3066</div><div class="col-chip">P3067</div><div class="col-chip">P3067S1</div><div class="col-chip">P3067S2</div><div class="col-chip">P6775</div><div class="col-chip">P3068</div><div class="col-chip">P6750</div><div class="col-chip">P3073</div><div class="col-chip">P550</div><div class="col-chip">P6780</div><div class="col-chip">P6780S1</div><div class="col-chip">P1879</div><div class="col-chip">P1805</div><div class="col-chip">P6790</div><div class="col-chip">P6800</div><div class="col-chip">P6810</div><div class="col-chip">P6810S1</div><div class="col-chip">P6850</div><div class="col-chip">P6830</div><div class="col-chip">P6830S1</div><div class="col-chip">P3366</div><div class="col-chip">P3069</div><div class="col-chip">P6880</div><div class="col-chip">P6880S1</div><div class="col-chip">P6915</div><div class="col-chip">P6915S1</div><div class="col-chip">P6920</div><div class="col-chip">P6930</div><div class="col-chip">P6940</div><div class="col-chip">P6960</div><div class="col-chip">P6990</div><div class="col-chip">P9450</div><div class="col-chip">P7020</div><div class="col-chip">P760</div><div class="col-chip">P7026</div><div class="col-chip">P7028</div><div class="col-chip">P7028S1</div><div class="col-chip">P1880</div><div class="col-chip">P1880S1</div><div class="col-chip">P7040</div><div class="col-chip">P7045</div><div class="col-chip">P7050</div><div class="col-chip">P7070</div><div class="col-chip">P7075</div><div class="col-chip">P7077</div><div class="col-chip">P7090</div><div class="col-chip">P7100</div><div class="col-chip">P7110</div><div class="col-chip">P7120</div><div class="col-chip">P7130</div><div class="col-chip">P7140S1</div><div class="col-chip">P7140S2</div><div class="col-chip">P7140S3</div><div class="col-chip">P7140S4</div><div class="col-chip">P7140S5</div><div class="col-chip">P7140S6</div><div class="col-chip">P7140S7</div><div class="col-chip">P7140S8</div><div class="col-chip">P7140S9</div><div class="col-chip">P7150</div><div class="col-chip">P7160</div><div class="col-chip">P7170S1</div><div class="col-chip">P7170S5</div><div class="col-chip">P7170S6</div><div class="col-chip">P7180</div><div class="col-chip">P514</div><div class="col-chip">P515</div><div class="col-chip">P1881</div><div class="col-chip">P1882</div><div class="col-chip">P7240</div><div class="col-chip">OCI</div><div class="col-chip">INGLABO</div><div class="col-chip">RAMA2D_R4</div><div class="col-chip">RAMA4D_R4</div><div class="col-chip">OFICIO_C8</div>
+    </div>
+  </details>
+
+  <details>
+    <summary><span>no_ocupados</span><span class="summary-meta chev">37 columnas ▸</span></summary>
+    <div class="col-grid">
+      <div class="col-chip">PERIODO</div><div class="col-chip">MES</div><div class="col-chip">PER</div><div class="col-chip">DIRECTORIO</div><div class="col-chip">SECUENCIA_P</div><div class="col-chip">ORDEN</div><div class="col-chip">HOGAR</div><div class="col-chip">REGIS</div><div class="col-chip">AREA</div><div class="col-chip">CLASE</div><div class="col-chip">FEX_C18</div><div class="col-chip">DPTO</div><div class="col-chip">FFT</div><div class="col-chip">DSCY</div><div class="col-chip">DSI</div><div class="col-chip">P7250</div><div class="col-chip">P7280</div><div class="col-chip">P744</div><div class="col-chip">P3074</div><div class="col-chip">P7260</div><div class="col-chip">P1806</div><div class="col-chip">P7430</div><div class="col-chip">P7440S1</div><div class="col-chip">P7440S2</div><div class="col-chip">P7450</div><div class="col-chip">P7350</div><div class="col-chip">P7360</div><div class="col-chip">P9460</div><div class="col-chip">P1519</div><div class="col-chip">P1883</div><div class="col-chip">P7422</div><div class="col-chip">P7422S1</div><div class="col-chip">OFICIO1_C8</div><div class="col-chip">OFICIO2_C8</div><div class="col-chip">RAMA2D_D_R4</div><div class="col-chip">RAMA4D_D_R4</div><div class="col-chip">P7440</div>
+    </div>
+  </details>
+
+  <details>
+    <summary><span>otras_formas_trabajo</span><span class="summary-meta chev">112 columnas ▸</span></summary>
+    <div class="col-grid">
+      <div class="col-chip">PERIODO</div><div class="col-chip">MES</div><div class="col-chip">PER</div><div class="col-chip">DIRECTORIO</div><div class="col-chip">SECUENCIA_P</div><div class="col-chip">ORDEN</div><div class="col-chip">HOGAR</div><div class="col-chip">REGIS</div><div class="col-chip">AREA</div><div class="col-chip">CLASE</div><div class="col-chip">FEX_C18</div><div class="col-chip">DPTO</div><div class="col-chip">P3076S1</div><div class="col-chip">P3076S1A1</div><div class="col-chip">P3076S1A2</div><div class="col-chip">P3076S2</div><div class="col-chip">P3076S2A1</div><div class="col-chip">P3076S2A2</div><div class="col-chip">P3076S3</div><div class="col-chip">P3076S3A1</div><div class="col-chip">P3076S3A2</div><div class="col-chip">P3077S1</div><div class="col-chip">P3077S1A1</div><div class="col-chip">P3077S1A2</div><div class="col-chip">P3077S2</div><div class="col-chip">P3077S2A1</div><div class="col-chip">P3077S2A2</div><div class="col-chip">P3077S3</div><div class="col-chip">P3077S3A1</div><div class="col-chip">P3077S3A2</div><div class="col-chip">P3078S1</div><div class="col-chip">P3078S1A1</div><div class="col-chip">P3078S1A2</div><div class="col-chip">P3078S2</div><div class="col-chip">P3078S2A1</div><div class="col-chip">P3078S2A2</div><div class="col-chip">P3078S3</div><div class="col-chip">P3078S3A1</div><div class="col-chip">P3078S3A2</div><div class="col-chip">P3079S1</div><div class="col-chip">P3079S1A1</div><div class="col-chip">P3079S1A2</div><div class="col-chip">P3079S2</div><div class="col-chip">P3079S2A1</div><div class="col-chip">P3079S2A2</div><div class="col-chip">P3079S3</div><div class="col-chip">P3079S3A1</div><div class="col-chip">P3079S3A2</div><div class="col-chip">P3081S1</div><div class="col-chip">P3081S1A1</div><div class="col-chip">P3081S1A2</div><div class="col-chip">P3081S2</div><div class="col-chip">P3081S2A1</div><div class="col-chip">P3081S2A2</div><div class="col-chip">P3081S3</div><div class="col-chip">P3081S3A1</div><div class="col-chip">P3081S3A2</div><div class="col-chip">P3082S1</div><div class="col-chip">P3082S1A1</div><div class="col-chip">P3082S1A2</div><div class="col-chip">P3082S2</div><div class="col-chip">P3082S2A1</div><div class="col-chip">P3082S2A2</div><div class="col-chip">P3082S3</div><div class="col-chip">P3082S3A1</div><div class="col-chip">P3082S3A2</div><div class="col-chip">P3083</div><div class="col-chip">P3083S1</div><div class="col-chip">P3084S2</div><div class="col-chip">P3085</div><div class="col-chip">P3086</div><div class="col-chip">P3086S1</div><div class="col-chip">P3087</div><div class="col-chip">P3087S1</div><div class="col-chip">P3088</div><div class="col-chip">P3089</div><div class="col-chip">P3089S1</div><div class="col-chip">P3089S2</div><div class="col-chip">P3089S3</div><div class="col-chip">P3091</div><div class="col-chip">P3091S1</div><div class="col-chip">P3091S2</div><div class="col-chip">P3092</div><div class="col-chip">P3092S1</div><div class="col-chip">P3092S2</div><div class="col-chip">P3093</div><div class="col-chip">P3093S1</div><div class="col-chip">P3093S2</div><div class="col-chip">P3094</div><div class="col-chip">P3094S1</div><div class="col-chip">P3094S2</div><div class="col-chip">P3094S3</div><div class="col-chip">P3095</div><div class="col-chip">P3095S1</div><div class="col-chip">P3095S2</div><div class="col-chip">P3095S3</div><div class="col-chip">P3096</div><div class="col-chip">P3096S1</div><div class="col-chip">P3096S2</div><div class="col-chip">P3096S3</div><div class="col-chip">P3097</div><div class="col-chip">P3097S1</div><div class="col-chip">P3097S2</div><div class="col-chip">P3098</div><div class="col-chip">P3098S1</div><div class="col-chip">P3098S2</div><div class="col-chip">P3099</div><div class="col-chip">P3099S1</div><div class="col-chip">P3099S2</div><div class="col-chip">P3101</div><div class="col-chip">P3101S1</div><div class="col-chip">P3101S2</div>
+    </div>
+  </details>
+
+  <details>
+    <summary><span>otros_ingresos</span><span class="summary-meta chev">59 columnas ▸</span></summary>
+    <div class="col-grid">
+      <div class="col-chip">PERIODO</div><div class="col-chip">MES</div><div class="col-chip">PER</div><div class="col-chip">DIRECTORIO</div><div class="col-chip">SECUENCIA_P</div><div class="col-chip">ORDEN</div><div class="col-chip">HOGAR</div><div class="col-chip">REGIS</div><div class="col-chip">AREA</div><div class="col-chip">CLASE</div><div class="col-chip">FEX_C18</div><div class="col-chip">DPTO</div><div class="col-chip">P7495</div><div class="col-chip">P7500S1</div><div class="col-chip">P7500S1A1</div><div class="col-chip">P7500S2</div><div class="col-chip">P7500S2A1</div><div class="col-chip">P7500S3</div><div class="col-chip">P7500S3A1</div><div class="col-chip">P7505</div><div class="col-chip">P7510S1</div><div class="col-chip">P7510S1A1</div><div class="col-chip">P7510S2</div><div class="col-chip">P7510S2A1</div><div class="col-chip">P7510S3</div><div class="col-chip">P7510S3A1</div><div class="col-chip">P750S1</div><div class="col-chip">P750S1A1</div><div class="col-chip">P750S2</div><div class="col-chip">P750S2A1</div><div class="col-chip">P1661S1</div><div class="col-chip">P1661S1A1</div><div class="col-chip">P1661S2</div><div class="col-chip">P1661S2A1</div><div class="col-chip">P1661S3</div><div class="col-chip">P1661S3A1</div><div class="col-chip">P1661S4</div><div class="col-chip">P1661S4A1</div><div class="col-chip">P1661S4A2</div><div class="col-chip">P750S3</div><div class="col-chip">P750S3A1</div><div class="col-chip">P7510S5</div><div class="col-chip">P7510S5A1</div><div class="col-chip">P7510S6</div><div class="col-chip">P7510S6A1</div><div class="col-chip">P7510S7</div><div class="col-chip">P7510S7A1</div><div class="col-chip">P3367</div><div class="col-chip">P3368</div><div class="col-chip">P3369</div><div class="col-chip">P3370</div><div class="col-chip">P3370S1</div><div class="col-chip">P3371</div><div class="col-chip">P3371S1</div><div class="col-chip">P3371S2</div><div class="col-chip">P3371S3</div><div class="col-chip">P3371S4</div><div class="col-chip">P3372</div><div class="col-chip">P3372S1</div>
+    </div>
+  </details>
+
+  <details>
+    <summary><span>migracion</span><span class="summary-meta chev">43 columnas ▸</span></summary>
+    <div class="col-grid">
+      <div class="col-chip">PERIODO</div><div class="col-chip">MES</div><div class="col-chip">PER</div><div class="col-chip">DIRECTORIO</div><div class="col-chip">SECUENCIA_P</div><div class="col-chip">ORDEN</div><div class="col-chip">HOGAR</div><div class="col-chip">REGIS</div><div class="col-chip">AREA</div><div class="col-chip">CLASE</div><div class="col-chip">FEX_C18</div><div class="col-chip">DPTO</div><div class="col-chip">P3373</div><div class="col-chip">P3373S1</div><div class="col-chip">P3373S2</div><div class="col-chip">P3373S3</div><div class="col-chip">P3373S3A1</div><div class="col-chip">P3373S3A2</div><div class="col-chip">P3374</div><div class="col-chip">P3374S1</div><div class="col-chip">P3374S2</div><div class="col-chip">P3374S3</div><div class="col-chip">P3375S1</div><div class="col-chip">P3376</div><div class="col-chip">P3377</div><div class="col-chip">P3378</div><div class="col-chip">P3378S1</div><div class="col-chip">P3379</div><div class="col-chip">P3380</div><div class="col-chip">P3381</div><div class="col-chip">P3382</div><div class="col-chip">P3382S1</div><div class="col-chip">P3382S2</div><div class="col-chip">P3382S3</div><div class="col-chip">P3383</div><div class="col-chip">P3384</div><div class="col-chip">P3384S1</div><div class="col-chip">P3384S2</div><div class="col-chip">P3384S3</div><div class="col-chip">P3385</div><div class="col-chip">P3386</div><div class="col-chip">P3386S1</div><div class="col-chip">P3375</div>
+    </div>
+  </details>
+
+  <h3 style="font-size:1.05rem; margin:1.8rem 0 .6rem;">IPM</h3>
+
+  <details>
+    <summary><span>Hogares (limpio)</span><span class="summary-meta chev">31 columnas ▸</span></summary>
+    <div class="col-grid">
+      <div class="col-chip">DIRECTORIO</div><div class="col-chip">SECUENCIA_P</div><div class="col-chip">SECUENCIA_ENCUESTA</div><div class="col-chip">P5010</div><div class="col-chip">P8526</div><div class="col-chip">P8530</div><div class="col-chip">PERSONAS</div><div class="col-chip">FEX_C</div><div class="col-chip">logro_educativo</div><div class="col-chip">analfabetismo</div><div class="col-chip">inasistencia_escolar</div><div class="col-chip">rezago_escolar</div><div class="col-chip">atencion_integral</div><div class="col-chip">trabajo_infantil</div><div class="col-chip">aseguramiento_salud</div><div class="col-chip">barreras_acceso_salud</div><div class="col-chip">desempleo_larga_duracion</div><div class="col-chip">empleo_formal</div><div class="col-chip">acueducto</div><div class="col-chip">alcantarillado</div><div class="col-chip">pisos</div><div class="col-chip">paredes</div><div class="col-chip">hacinamiento</div><div class="col-chip">IPM</div><div class="col-chip">POBRE</div><div class="col-chip">FEXP</div><div class="col-chip">PERIODO</div><div class="col-chip">P1075</div><div class="col-chip">P1077S21</div><div class="col-chip">P1077S22</div><div class="col-chip">P1077S23</div>
+    </div>
+  </details>
+
+  <details>
+    <summary><span>Personas (raw)</span><span class="summary-meta chev">33 columnas ▸</span></summary>
+    <div class="col-grid">
+      <div class="col-chip">DIRECTORIO</div><div class="col-chip">SECUENCIA_ENCUESTA</div><div class="col-chip">SECUENCIA_P</div><div class="col-chip">ORDEN</div><div class="col-chip">P6020</div><div class="col-chip">P6040</div><div class="col-chip">P6051</div><div class="col-chip">FEX_C</div><div class="col-chip">P6090</div><div class="col-chip">P5665</div><div class="col-chip">P8563</div><div class="col-chip">P51</div><div class="col-chip">P55</div><div class="col-chip">P774</div><div class="col-chip">P6160</div><div class="col-chip">P8587</div><div class="col-chip">P8587S1</div><div class="col-chip">P1088</div><div class="col-chip">P1088S1</div><div class="col-chip">P6180</div><div class="col-chip">P6250</div><div class="col-chip">P6260</div><div class="col-chip">P6270</div><div class="col-chip">P6351</div><div class="col-chip">P7250</div><div class="col-chip">P6920</div><div class="col-chip">P8586</div><div class="col-chip">P3336S1</div><div class="col-chip">P3336S2</div><div class="col-chip">P3336S3</div><div class="col-chip">P3337</div><div class="col-chip">P6240</div><div class="col-chip">P1082S2</div>
+    </div>
+  </details>
+
+  <details>
+    <summary><span>Viviendas (raw)</span><span class="summary-meta chev">8 columnas ▸</span></summary>
+    <div class="col-grid">
+      <div class="col-chip">DIRECTORIO</div><div class="col-chip">SECUENCIA_ENCUESTA</div><div class="col-chip">SECUENCIA_P</div><div class="col-chip">P3</div><div class="col-chip">P4005</div><div class="col-chip">P4015</div><div class="col-chip">P8520S3</div><div class="col-chip">P8520S5</div>
+    </div>
+  </details>
+
+</section>
+
+</main>
+
+<footer>
+  Fuentes: <code>data/catalogo.yaml</code>, <code>docs/DICCIONARIO_DATOS.md</code>, columnas extraídas directamente de <code>data/1_processed/geih/2024/01/</code>, <code>data/1_processed/ipm_hogares_nacional_limpio.parquet</code> y <code>data/0_raw/ipm/</code>. Reporte generado el 9 de agosto de 2026 a partir del estado actual del repositorio — no incluye Sisbén IV, DPS ni RUI porque aún no hay microdato depositado.
+</footer>

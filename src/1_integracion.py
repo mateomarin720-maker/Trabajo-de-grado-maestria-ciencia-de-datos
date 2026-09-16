@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import logging
 
+from ingesta.geih_loader import ingest_geih
 from ingesta.local_csv_parser import parse_csv_a_parquet
 from ingesta.socrata_client import SocrataClient
 from utils.config import load_catalogo, raw_path
@@ -91,8 +92,23 @@ def verificar_restringida(fuente: dict) -> None:
     """Verifica si una fuente restringida ya fue depositada manualmente.
 
     Si además hay un procesador local configurado en ARCHIVOS_LOCALES
-    (p. ej. IPM), lo corre; si no, solo avisa qué falta gestionar.
+    (p. ej. IPM), lo corre; GEIH usa su propio loader (`geih_loader`)
+    porque viene repartido en 12 archivos mensuales con estructura
+    distinta, no un solo CSV por tabla como IPM. Si no hay nada
+    depositado, solo avisa qué falta gestionar.
     """
+    if fuente["id"] == "geih":
+        resumen = ingest_geih()
+        if resumen:
+            logger.info("GEIH: %s meses procesados", len(resumen))
+        else:
+            logger.warning(
+                "GEIH pendiente — depositar al menos un mes en "
+                "data/0_raw/geih/2024/<mes>/CSV/ (ver docstring de "
+                "src/ingesta/geih_loader.py)."
+            )
+        return
+
     destino = raw_path(fuente["id"])
     if destino.exists() and any(destino.iterdir()):
         logger.info("Fuente '%s' ya disponible en %s", fuente["id"], destino)

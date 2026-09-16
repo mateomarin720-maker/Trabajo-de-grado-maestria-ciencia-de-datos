@@ -15,19 +15,77 @@ fuentes:
     entidad: DANE
     portal: "microdatos.dane.gov.co"
     catalogo_ref: null  # completar con número de catálogo tras registro
-    periodo: "2024-2025 (anual)"
+    periodo: "2024 (mensual, 12 archivos)"
     unidad_analisis: hogar / persona
     acceso: registro
-    estado: pendiente
+    estado: disponible
     notas: >
-      Microdatos anonimizados disponibles previo registro en el Archivo
-      Nacional de Datos (ANDA) del DANE. Fuente primaria para pobreza
-      monetaria y multidimensional; ~315.000 hogares/año.
+      Verificado 2026-08-09: descarga manual desde microdatos.dane.gov.co,
+      previo registro gratuito (microdato PÚBLICO, no requiere solicitud
+      institucional a diferencia de Sisbén). Se entrega en archivos
+      mensuales (Ene_2024.zip ... Dic_2024.zip), cada uno con 8 módulos
+      en 3 formatos (DTA/SAV/CSV): "Datos del hogar y la vivienda"
+      (nivel hogar), "Características generales...", "Fuerza de
+      trabajo", "Ocupados", "No ocupados", "Otras formas de trabajo",
+      "Otros ingresos e impuestos", "Migración" (estos 7 a nivel
+      persona). Depositados localmente en
+      data/0_raw/geih/2024/{01..12}/CSV/*.CSV (NO versionado en git —
+      ver .gitignore).
+      Llave de hogar: DIRECTORIO + SECUENCIA_P + HOGAR (verificado
+      único en enero 2024: 24.247 hogares, 0 duplicados, 33
+      departamentos representados). Llave de persona: se agrega ORDEN.
+      Nota de nomenclatura: NO usa SECUENCIA_ENCUESTA como el IPM — es
+      SECUENCIA_P directamente, distinto de la convención IPM.
+
+      Validación de integridad 2024-08-09 (12/12 meses, ver
+      src/utils/validar_geih.py y docs/reports/reporte_*_geih.csv):
+      corregidos 2 bugs de ingesta que dejaban meses sin procesar —
+      geih_loader.py tomaba solo la primera carpeta "CSV" encontrada por
+      rglob (algunos meses traen carpetas "CSV" vacías/decoy junto a la
+      real, según cómo se descomprimió el ZIP), lo que hacía fallar
+      marzo y abril completos; y el prefijo "No ocupados" no matcheaba
+      "No ocupado.CSV" (marzo viene en singular). Agosto 2024 solo trae
+      1/8 módulos en CSV en el origen (el resto vino vacío en la
+      descarga) — se agregó fallback a .DTA (parse_stata_a_parquet) para
+      los 7 módulos restantes, marcados con `_source_format=dta_fallback`
+      en el parquet para trazabilidad.
+      Resultado tras las correcciones: 12/12 meses con 8/8 módulos, 0
+      duplicados de llave hogar en ningún mes, 33/33 departamentos
+      representados en todos los meses. Representatividad: hogares
+      expandidos (suma FEX_C18) crece de forma suave y monótona de
+      17.69M (enero) a 18.12M (diciembre), sin saltos anómalos; % de
+      hogares en cabecera municipal estable en 78.3-78.4% todo el año —
+      ambos son señales de consistencia interna, no de sesgo. Error
+      muestral: el microdato público NO trae variables de diseño
+      (estrato/UPM), así que solo se pudo calcular un error naíve bajo
+      supuesto SRS (~0.25-0.3 pp de error estándar para una proporción
+      cercana a 78%) — es una COTA INFERIOR; el error real de GEIH bajo
+      su diseño complejo estratificado-conglomerado es mayor (deff > 1,
+      no cuantificable sin las variables de diseño). Para error oficial
+      usar los anexos de indicadores de DANE.
+    diccionario_variables:
+      identificadores:
+        DIRECTORIO: "Identificador de hogar (segmento muestral)"
+        SECUENCIA_P: "Secuencia del hogar dentro del directorio"
+        HOGAR: "Número de hogar dentro de la vivienda"
+        ORDEN: "Orden de la persona dentro del hogar (módulos de persona)"
+        FEX_C18: "Factor de expansión"
+        DPTO: "Código de departamento (33 valores, incl. dominios especiales)"
+      vivienda_comunes_con_ipm:
+        P4010: "Tipo de vivienda"
+        P4020: "Material predominante paredes exteriores"
+        P4030S1: "Material predominante pisos"
+        P5010: "Número de cuartos"
+        P5020: "Cuartos usados para dormir (insumo hacinamiento)"
     variables_clave:
       - ingreso_percapita
       - condicion_ocupacion
       - informalidad_laboral
       - composicion_hogar
+      - p4010
+      - p4020
+      - p5010
+      - p5020
 
   - id: sisben_iv
     nombre: "Sisbén IV — Registro Social de Hogares"

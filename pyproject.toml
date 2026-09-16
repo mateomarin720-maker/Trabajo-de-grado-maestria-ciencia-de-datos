@@ -8,6 +8,12 @@ authors = [
 ]
 license = "MIT"
 readme = "README.md"
+# El repo son scripts en src/ (1_integracion.py, 2_limpieza.py, ...), no
+# una librería empaquetable con __init__.py — sin esto Poetry intenta
+# instalar "sisben_causal" como paquete y falla con "No file/folder
+# found for package sisben-causal". package-mode=false le dice a Poetry
+# que solo gestione dependencias, sin empaquetar el proyecto en sí.
+package-mode = false
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.14"

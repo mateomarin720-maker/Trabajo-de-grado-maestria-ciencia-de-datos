@@ -12,6 +12,13 @@ documentado y preferiblemente cubierto por pruebas.
     `datos.gov.co` y `microdatos.dane.gov.co` para datasets abiertos como
     IPM agregado), siguiendo el mismo patrón de parsers Socrata + CSV del
     proyecto hermano `desarrollo_social_y_economico`.
+  - `geih_loader.py`: recorre automáticamente los meses de GEIH
+    depositados en `data/0_raw/geih/2024/<mes>/CSV/` (01..12) y convierte
+    cada uno de los 8 módulos a Parquet en `data/1_processed/geih/2024/<mes>/`.
+    No requiere tener los 12 meses — procesa los que encuentre. GEIH es
+    de acceso abierto (no requiere solicitud institucional como Sisbén),
+    pero **nunca se versiona el CSV/DTA/SAV crudo en git** — solo el
+    código que lo procesa (ver `.gitignore`, `data/0_raw/*`).
   - Las fuentes de acceso restringido (Sisbén IV, DPS, RUI) no tienen
     cliente API — se documentan en `data/catalogo.yaml` como
     `solicitud_institucional` y se ingieren manualmente en `0_raw/` una

@@ -59,6 +59,7 @@ def parse_csv_a_parquet(
     output_path: str | Path,
     fuente_id: str,
     chunk_size: int = DEFAULT_CHUNK_SIZE,
+    encoding: str = "utf-8",
 ) -> dict[str, Any]:
     """Convierte un único CSV (potencialmente pesado) a Parquet, por chunks.
 
@@ -66,6 +67,10 @@ def parse_csv_a_parquet(
     tipado todavía — eso se hace en `2_limpieza.py`). Agrega metadatos de
     trazabilidad (`_ingestion_timestamp`, `_source`, `_source_file`) a
     cada fila, igual que en el pipeline de referencia.
+
+    `encoding`: la mayoría de fuentes DANE (IPM, Sisbén) vienen en UTF-8,
+    pero la descarga CSV de GEIH viene en Latin-1 (ISO-8859-1) — pasar
+    encoding="latin1" para esa fuente o se rompe la lectura con tildes/ñ.
     """
     input_path = Path(input_path)
     output_path = Path(output_path)
@@ -79,10 +84,11 @@ def parse_csv_a_parquet(
     sep = _detectar_separador(input_path)
 
     logger.info(
-        "Leyendo %s (%.2f GB, sep='%s')",
+        "Leyendo %s (%.2f GB, sep='%s', encoding='%s')",
         input_path,
         input_path.stat().st_size / (1024**3),
         sep,
+        encoding,
     )
 
     writer = None
@@ -96,7 +102,7 @@ def parse_csv_a_parquet(
                 dtype=str,
                 keep_default_na=False,
                 low_memory=False,
-                encoding="utf-8",
+                encoding=encoding,
                 on_bad_lines="warn",
             )
         ):
@@ -208,6 +214,53 @@ def parse_carpeta_csv_a_parquet(
         "registros": total_records,
         "archivos_procesados": archivos_ok,
         "archivos_con_error": archivos_error,
+        "fuente": fuente_id,
+    }
+
+
+def parse_stata_a_parquet(
+    input_path: str | Path,
+    output_path: str | Path,
+    fuente_id: str,
+) -> dict[str, Any]:
+    """Convierte un único .DTA (Stata) a Parquet.
+
+    Fallback para módulos donde el CSV entregado está incompleto o
+    corrupto pero el .DTA sí vino completo (caso GEIH agosto 2024, ver
+    `geih_loader.py`). A diferencia de `parse_csv_a_parquet`, no castea
+    todo a string: se conservan los tipos que trae Stata (categorías como
+    int/float, texto como string) y se normalizan a string después para
+    quedar en el mismo esquema "capa raw" que produce el CSV — el tipado
+    fino de cada variable se sigue haciendo en `2_limpieza.py`.
+    """
+    input_path = Path(input_path)
+    output_path = Path(output_path)
+
+    if not input_path.exists():
+        msg = f"Archivo no encontrado: {input_path}"
+        logger.error(msg)
+        return {"status": "error", "error": msg}
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    logger.info("Leyendo %s (Stata .DTA, fallback)", input_path)
+
+    df = pd.read_stata(input_path, convert_categoricals=False)
+    if df.empty:
+        logger.warning("No se escribió nada — ¿archivo vacío?: %s", input_path)
+        return {"status": "warning", "error": "Archivo vacío", "archivo": str(input_path)}
+
+    df = df.astype(str)
+    df["_ingestion_timestamp"] = datetime.now().isoformat()
+    df["_source"] = fuente_id
+    df["_source_file"] = input_path.name
+    df["_source_format"] = "dta_fallback"
+
+    df.to_parquet(output_path, index=False)
+    logger.info("Guardado: %s (%s filas, vía .DTA)", output_path, f"{len(df):,}")
+    return {
+        "status": "success",
+        "archivo": str(output_path),
+        "registros": len(df),
         "fuente": fuente_id,
     }
 
